@@ -1,18 +1,63 @@
+import { useEffect, useState } from 'react';
 import './Post.css';
+import { getPostsById, deletePost } from './PostService';
 
+const PostDetails = (props) => {
 
-const PostDetails = (post) => {
+    const [post, setPost] = useState(null);
+
+    useEffect(() => {
+        getPostsById(props.id).then(async data => {
+            const post = await data.json();
+            setPost(post);
+        }).catch(err => {
+            console.log(err);
+        });
+    }, [props.id]);
+
+    const comments = () => post.comments.map(comment => {
+        return (
+            <div key={comment.id} className='comment'>
+                <p>{comment.name}</p>
+            </div>
+        );
+    });
+
+    const deletePostHandler = () => {
+        deletePost(props.id).then(() => {
+            setPost(null);
+            props.setId(null);
+            props.fetchPostsFlag();
+        }).catch(err => {
+            console.log(err);
+        });
+    }
+
     return (
         <div className='post-details'>
-            <div className='post-info'>
-                <h1>{post.title}</h1>
-                <h3>{post.author}</h3>
-                <p>{post.content}</p>
-            </div>
-            <div className='post-btn'>
-                <button>Edit</button>
-                <button onClick={() => post.delete(post.id)}>Delete</button>
-            </div>
+            {post && (
+                <div>
+
+                    <div className='post-info'>
+                        <h1>{post.title}</h1>
+                        <h3>{post.author}</h3>
+                        <p>{post.content}</p>
+                    </div>
+                    <div className='post-comments'>
+                        {post.comments && post.comments.length > 0 && (
+                            <div>
+                                <h3>Comments:</h3>
+                                {comments()}
+                            </div>
+                            )}
+                    </div>
+                    <div className='post-btn'>
+                        <button>Edit</button>
+                        <button onClick={deletePostHandler}>Delete</button>
+                    </div>
+
+                </div>
+            )}
         </div>
     );
 }

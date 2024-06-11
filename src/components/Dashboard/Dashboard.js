@@ -2,26 +2,21 @@ import { useState } from 'react';
 import './Dashboard.css';
 import Posts from '../Post/Posts';
 import PostDetails from '../Post/PostDetails';
+import PostAdd from '../Post/PostAdd';
 
 const Dashboard = () => {
 
-    const [posts, setPosts] = useState([
-        { id: 1, title: 'Title 1', author: 'Author 1', content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit'},
-        { id: 2, title: 'Title 2', author: 'Author 2', content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit'},
-        { id: 3, title: 'Title 3', author: 'Author 3', content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit'}
-    ]);
+    const [postId, setPostId] = useState(null);
+    const [fetchPosts, setFetchPosts] = useState(true);
 
-    const [post, setPost] = useState(null);
-    
-    const deletePostHandler = (postId) => {
-        const updatedPosts = posts.filter(post => post.id !== postId);
-        setPosts(updatedPosts);
+    const fetchPostsFlag = () => {
+        setFetchPosts(!fetchPosts);
     }
-
+    
     return (
         <div className='dashboard'>
             <div className='posts'>
-                <Posts setPost={setPost} posts={posts} />
+                <Posts setPostId={setPostId} fetchPosts={fetchPosts} />
             </div>
 
             <div className='form'>
@@ -29,7 +24,11 @@ const Dashboard = () => {
                 <input type='submit' value='Change Name' />
             </div>
 
-            {post && <PostDetails title={post.title} id={post.id} author={post.author} content={post.content} delete={deletePostHandler} /> }
+            <PostAdd fetchPostsFlag={fetchPostsFlag} />
+
+            {postId && 
+                <PostDetails id={postId} setId={setPostId} fetchPostsFlag={fetchPostsFlag} />}
+
         </div>
     );
 }
