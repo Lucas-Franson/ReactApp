@@ -5,7 +5,7 @@ const Comment = (props) => {
  
     return (
         <div className='comment'>
-            
+            <p>{props.name}</p>
         </div>
     );
 }

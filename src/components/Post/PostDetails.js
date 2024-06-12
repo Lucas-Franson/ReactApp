@@ -1,30 +1,34 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import './Post.css';
 import { getPostsById, deletePost } from './PostService';
+import { PostContext } from '../../context/PostContext';
+import Comment from '../Comment/Comment';
 
 const PostDetails = (props) => {
 
     const [post, setPost] = useState(null);
 
+    const id = useContext(PostContext);
+
     useEffect(() => {
-        getPostsById(props.id).then(async data => {
+        getPostsById(id).then(async data => {
             const post = await data.json();
             setPost(post);
         }).catch(err => {
             console.log(err);
         });
-    }, [props.id]);
+    }, [id]);
 
-    const comments = () => post.comments.map(comment => {
-        return (
-            <div key={comment.id} className='comment'>
-                <p>{comment.name}</p>
-            </div>
-        );
-    });
+    const comments = useMemo(() => {
+        return post?.comments?.map(comment => {
+            return (
+                <Comment key={comment.id} name={comment.name} />
+            );
+        });
+    }, [post?.comments]);
 
     const deletePostHandler = () => {
-        deletePost(props.id).then(() => {
+        deletePost(id).then(() => {
             setPost(null);
             props.setId(null);
             props.fetchPostsFlag();
@@ -47,7 +51,7 @@ const PostDetails = (props) => {
                         {post.comments && post.comments.length > 0 && (
                             <div>
                                 <h3>Comments:</h3>
-                                {comments()}
+                                {comments}
                             </div>
                             )}
                     </div>

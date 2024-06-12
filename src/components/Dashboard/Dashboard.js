@@ -3,6 +3,7 @@ import './Dashboard.css';
 import Posts from '../Post/Posts';
 import PostDetails from '../Post/PostDetails';
 import PostAdd from '../Post/PostAdd';
+import { PostContext } from '../../context/PostContext';
 
 const Dashboard = () => {
 
@@ -15,9 +16,14 @@ const Dashboard = () => {
     
     return (
         <div className='dashboard'>
-            <div className='posts'>
-                <Posts setPostId={setPostId} fetchPosts={fetchPosts} />
-            </div>
+            <PostContext.Provider value={postId}>
+                <div className='posts'>
+                    <Posts setPostId={setPostId} fetchPosts={fetchPosts} />
+                </div>
+
+                {postId && 
+                    <PostDetails setId={setPostId} fetchPostsFlag={fetchPostsFlag} />}
+            </PostContext.Provider>
 
             <div className='form'>
                 <input type='text' placeholder='Title' />
@@ -25,10 +31,6 @@ const Dashboard = () => {
             </div>
 
             <PostAdd fetchPostsFlag={fetchPostsFlag} />
-
-            {postId && 
-                <PostDetails id={postId} setId={setPostId} fetchPostsFlag={fetchPostsFlag} />}
-
         </div>
     );
 }
